@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book index{% endblock %}
+
+{% block body %}
+    <div class="container">
+    <h1>📚 Catalogue des Livres</h1>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Titre</th>
+					<th>Auteur</th>
+					<th>Isbn</th>
+					<th>Stock</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for book in books %}
+					<tr>
+						<td>{{ book.titre }}</td>
+						<td>{{ book.auteur }}</td>
+						<td>{{ book.isbn }}</td>
+						<td>{{ book.stock }}</td>
+						<td>
+							<a class="btn btn-outline-primary" href="{{ path('app_emprunt', {'id': book.id}) }}">Emprunter</a>
+							<a class="btn btn-outline-success" href="{{path('app_book_edit', {'id': book.id})}}">Modifier</a>
+							<a class="btn btn-danger" href="{{path('app_book_delete', {'id': book.id})}}">Supprimer</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6">Pas de livre trouvé</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<a class="btn btn-outline-primary" href="{{ path('app_book_new') }}">Ajouter un nouveau livre</a>
+	</div>
+{% endblock %}
