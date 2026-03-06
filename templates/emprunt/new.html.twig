@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Emprunter
+	{{ book.titre }}
+{% endblock %}
+
+{% block body %}
+	<div
+		class="container mt-4">
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		<h1 class="text-uppercase"> EMPRUNT -
+			{{ book.titre }}</h1>
+
+		<div class="alert alert-info">
+			<strong>{{ book.stock }}</strong>
+			exemplaires disponibles en rayon.
+		</div>
+
+	<div class="card-body">
+    {{ form_start(form) }}
+
+    {% if app.user %}
+        <div class="alert alert-light border mb-4">
+            <p><strong>Identité :</strong> {{ app.user.firstName }} {{ app.user.lastName }}</p>
+            <p><strong>Email :</strong> {{ app.user.email }}</p>
+            <p class="text-muted small">Vos informations seront automatiquement liées à cet emprunt.</p>
+        </div>
+        
+        {% if form.phone is defined %}
+            {{ form_row(form.phone) }}
+        {% endif %}
+
+    {% else %}
+        {{ form_row(form.user) }}
+        <div class="row">
+            <div class="col-md-6">{{ form_row(form.lastName) }}</div>
+            <div class="col-md-6">{{ form_row(form.firstName) }}</div>
+        </div>
+        {{ form_row(form.email) }}
+        {{ form_row(form.phone) }}
+    {% endif %}
+
+    <button type="submit" class="btn btn-success btn-lg w-100 mt-3">
+        CONFIRMER L'EMPRUNT
+    </button>
+
+    {{ form_end(form) }}
+</div>
+</div>
+		<a href="{{ path('app_book_index') }}" class="btn btn-link mt-3 text-secondary text-decoration-none">
+			← Retour au catalogue
+		</a>
+	</div>
+{% endblock %}

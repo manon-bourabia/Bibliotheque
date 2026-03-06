@@ -10,8 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/user')]
+#[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
@@ -22,25 +24,66 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/admin/user/{id}/to/editor', name: 'app_user_to_editor')]
+    public function changeRoleToEditor(EntityManagerInterface $entityManager, User $user): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+        $user->setRoles(['ROLE_EDITOR', 'ROLE_USER']);
+        $entityManager->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
+        $this->addFlash('success', 'Le rôle de l\'utilisateur a été changé avec succès.');
+        return $this->redirectToRoute('app_user');
+    }
+    #[Route('/admin/user/{id}/change-role/{role}', name: 'app_user_change_role')]
+    public function changeRole(EntityManagerInterface $entityManager, User $user, $role): Response
+    {
+        $validRoles = ['ROLE_EDITOR', 'ROLE_USER'];
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        if (!in_array($role, $validRoles, true)) {
+            $this->addFlash('error', "Le rôle demandé n'est pas valide.");
+            return $this->redirectToRoute('app_user');
         }
 
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        if ($role !== 'ROLE_USER') {
+            $user->setRoles([$role, 'ROLE_USER']);
+        } else {
+            $user->setRoles([$role]);
+        }
+        $entityManager->flush();
+
+        $this->addFlash('success', "Le rôle $role a bien été attribué à l'utilisateur.");
+
+        return $this->redirectToRoute('app_user');
     }
+    #[Route('/admin/user/{id}/remove/editor/role ', name: 'app_user_remove_editor_role')]
+    public function removeRoleEditor(EntityManagerInterface $entityManager, User $user): Response
+    {
+        $user->setRoles([]);
+        $entityManager->flush();
+
+        $this->addFlash('danger', "Le rôle éditeur à bien été retiré à l'utilisateur");
+
+        return $this->redirectToRoute('app_user');
+    }
+
+    // #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
+    // public function new(Request $request, EntityManagerInterface $entityManager): Response
+    // {
+    //     $user = new User();
+    //     $form = $this->createForm(UserType::class, $user);
+    //     $form->handleRequest($request);
+
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->persist($user);
+    //         $entityManager->flush();
+
+    //         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    //     }
+
+    //     return $this->render('user/new.html.twig', [
+    //         'user' => $user,
+    //         'form' => $form,
+    //     ]);
+    // }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
@@ -71,7 +114,7 @@ final class UserController extends AbstractController
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
