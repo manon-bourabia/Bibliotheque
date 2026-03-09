@@ -113,8 +113,6 @@ final class EmpruntController extends AbstractController
     #[Route('/emprunts/user/{id}', name: 'app_emprunt_user_history')]
     public function userFullHistory(User $user, EmpruntRepository $empruntRepository): Response
     {
-        // On utilise findBy pour filtrer par l'objet User
-        // On trie par date pour avoir les plus récents en premier
         $emprunts = $empruntRepository->findBy(['user' => $user], ['dateEmprunt' => 'DESC']);
 
         return $this->render('emprunt/user_history.html.twig', [
