@@ -37,12 +37,15 @@
 								</td>
 								<td class="align-middle">
 									{% if emprunt.dateRetour %}
-										<span class="badge bg-success">TERMINE</span>
-										<small class="text-muted d-block">le
-											{{ emprunt.dateRetour|date('d/m/Y') }}</small>
-									{% else %}
-										<span class="badge bg-warning text-dark">EN_COURS</span>
-									{% endif %}
+										<span class="badge {{ emprunt.statut == 'rendu' ? 'bg-success' : 'bg-warning text-dark' }}">
+											{{ emprunt.statut|upper }}
+										</span>
+
+										{% if emprunt.dateRetour %}
+											<small class="text-muted d-block">le
+												{{ emprunt.dateRetour|date('d/m/Y') }}</small>
+										{% endif %}
+									</td>
 								</td>
 								<td class="text-end align-middle">
 									<div class="btn-group">

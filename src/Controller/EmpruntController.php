@@ -126,10 +126,11 @@ final class EmpruntController extends AbstractController
         ]);
     }
     #[Route('/emprunt/rendre/{id}', name: 'app_emprunt_rendre', methods: ['POST', 'GET'])]
-public function rendreLivre(Emprunt $emprunt, EntityManagerInterface $entityManager): Response
+public function returnBook(Emprunt $emprunt, EntityManagerInterface $entityManager): Response
 {
     if (!$emprunt->getDateRetour()) {
         $emprunt->setDateRetour(new \DateTimeImmutable());
+        $emprunt->setStatut('terminé');
         $entityManager->flush();
 
         $this->addFlash('success', 'Le livre "' . $emprunt->getBook()->getTitre() . '" a bien été rendu.');
