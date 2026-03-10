@@ -28,7 +28,7 @@
                         <div class="mt-auto">
                             {% if book.stock > 0 %}
                                 <div class="d-grid gap-2">
-                                    <a class="btn btn-primary" href="{{ path('app_emprunt_new', {'id': book.id}) }}">
+                                    <a class="btn btn-info" href="{{ path('app_emprunt_new', {'id': book.id}) }}">
                                         Emprunter
                                     </a>
                                     <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_book_show', {'id': book.id}) }}">

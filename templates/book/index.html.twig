@@ -29,7 +29,6 @@
                     {% for book in books %}
                         <tr>
                             <td class="ps-4">
-                                {# Image agrandie : 120px de large #}
                                 <a href="{{ path('app_book_show', {'id': book.id}) }}">
                                     <img src="{{ asset('images/' ~ book.image) }}" 
                                          alt="{{ book.titre }}" 
@@ -62,7 +61,7 @@
                                     </a>
                                     
                                     {% if book.stock > 0 %}
-                                        <a class="btn btn-sm btn-primary" href="{{ path('app_emprunt_new', {'id': book.id}) }}">
+                                        <a class="btn btn-sm btn-info" href="{{ path('app_emprunt_new', {'id': book.id}) }}">
                                             Emprunter
                                         </a>
                                     {% endif %}
